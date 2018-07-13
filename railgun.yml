@@ -1,0 +1,24 @@
+# https://dev-accel.shopify.io/dev/railgun/Railgun-Config
+name: lhm
+
+vm:
+  image:      /opt/dev/misc/railgun-images/default
+  ip_address: 192.168.64.137
+  memory:     2G
+  cores:      2
+
+volumes:
+  root:  '1G'
+
+hostnames:
+  - mysql_slave.railgun
+
+custom_services:
+  - mysql_slave:
+      healthcheck_port: 3307
+      image: 'index.docker.io/mysql/mysql-server:5.7'
+      copy_files:
+        config/mysql/my.cnf: /etc/my.cnf
+      env:
+        MYSQL_ROOT_PASSWORD: 'slave'
+        MYSQL_ROOT_HOST: '%'

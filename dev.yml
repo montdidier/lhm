@@ -1,0 +1,13 @@
+name: lhm
+up:
+  - homebrew:
+      - openssl
+      - shopify/shopify/mysql-client
+  - ruby: 2.5.0
+  - bundler
+  - railgun
+
+commands:
+  unit: bundle exec rake unit
+  integration: bundle exec rake integration
+  test: bundle exec rake unit integration
