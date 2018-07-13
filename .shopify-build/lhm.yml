@@ -1,0 +1,10 @@
+containers:
+  default:
+    docker: circleci/ruby:2.5.0
+
+steps:
+- label: Tests
+  timeout: 5m
+  run:
+  - bundle exec rake unit
+

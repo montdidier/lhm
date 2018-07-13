@@ -1,4 +1,5 @@
-# Large Hadron Migrator [![Build Status][5]][4]
+# Large Hadron Migrator
+[![Build status](https://badge.buildkite.com/6ed04595f04c5cf6f9f1453afd3705046f6c83088bd29cecf7.svg)](https://buildkite.com/shopify/lhm)
 
 Rails style database migrations are a useful way to evolve your data schema in
 an agile manner. Most Rails projects start like this, and at first, making
