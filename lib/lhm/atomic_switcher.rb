@@ -43,7 +43,7 @@ module Lhm
     private
 
     def execute
-      execute_with_retries(atomic_switch)
+      connection_with_retries(statement: atomic_switch, invoke_with: :execute)
     end
   end
 end

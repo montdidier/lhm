@@ -5,18 +5,18 @@ module Lhm
   # RetryHelper standardizes the interface for retry behavior in components like
   # Entangler and AtomicSwitcher.
   #
-  # To retry some behavior, use `execute_with_retries(statement)`
+  # To retry some behavior, use `connection_with_retries(statement: sql, invoke_with: :execute)`
   # which assumes `@connection` is available.
   #
-  # `execute_with_retries` expects the caller to invoke `configure_retry` first, providing:
+  # `connection_with_retries` expects the caller to invoke `configure_retry` first, providing:
   # * `tries` as an integer
   # * `base_interval` as an integer
   #
   # For a full list of configuration options see https://github.com/kamui/retriable
   module RetryHelper
-    def execute_with_retries(statement)
+    def connection_with_retries(statement:, invoke_with:)
       Retriable.retriable(retry_config) do
-        @connection.execute(SqlHelper.tagged(statement))
+        @connection.public_send(invoke_with, SqlHelper.tagged(statement))
       end
     end
 

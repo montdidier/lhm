@@ -89,13 +89,13 @@ module Lhm
 
     def before
       entangle.each do |stmt|
-        execute_with_retries(stmt)
+        connection_with_retries(statement: stmt, invoke_with: :execute)
       end
     end
 
     def after
       untangle.each do |stmt|
-        execute_with_retries(stmt)
+        connection_with_retries(statement: stmt, invoke_with: :execute)
       end
     end
 
