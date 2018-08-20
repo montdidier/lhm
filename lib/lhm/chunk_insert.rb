@@ -9,10 +9,7 @@ module Lhm
       @connection = connection
       @lowest = lowest
       @highest = highest
-      configure_retry({
-        tries: options.dig(:retriable, :tries) || 600,
-        base_interval: options.dig(:retriable, :base_interval) || 10
-      })
+      configure_retry(options[:retriable])
     end
 
     def insert_and_return_count_of_rows_created
