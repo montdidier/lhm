@@ -52,7 +52,7 @@ module Lhm
         },
         multiplier: 1, # each successive interval grows by this factor
         base_interval: 1, # the initial interval in seconds between tries.
-        tries: 10, # Number of attempts to make at running your code block (includes initial attempt).
+        tries: 20, # Number of attempts to make at running your code block (includes initial attempt).
         rand_factor: 0, # percentage to randomize the next retry interval time
         max_elapsed_time: Float::INFINITY, # max total time in seconds that code is allowed to keep being retried
         on_retry: Proc.new do |exception, try_number, total_elapsed_time, next_interval|
