@@ -15,7 +15,9 @@ module Lhm
   # and replaced by destination.
   class Invoker
     include SqlHelper
-    LOCK_WAIT_TIMEOUT_DELTA = -2
+    LOCK_WAIT_TIMEOUT_DELTA = 10
+      INNODB_LOCK_WAIT_TIMEOUT_MAX=1073741824.freeze # https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_lock_wait_timeout
+      LOCK_WAIT_TIMEOUT_MAX=31536000.freeze # https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html
 
     attr_reader :migrator, :connection
 
@@ -29,11 +31,17 @@ module Lhm
       global_lock_wait_timeout = @connection.select_one("SHOW GLOBAL VARIABLES LIKE 'lock_wait_timeout'")
 
       if global_innodb_lock_wait_timeout
-        @connection.execute("SET SESSION innodb_lock_wait_timeout=#{global_innodb_lock_wait_timeout['Value'].to_i + LOCK_WAIT_TIMEOUT_DELTA}")
+        desired_innodb_lock_wait_timeout = global_innodb_lock_wait_timeout['Value'].to_i + LOCK_WAIT_TIMEOUT_DELTA
+        if desired_innodb_lock_wait_timeout <= INNODB_LOCK_WAIT_TIMEOUT_MAX
+          @connection.execute("SET SESSION innodb_lock_wait_timeout=#{desired_innodb_lock_wait_timeout}")
+        end
       end
 
       if global_lock_wait_timeout
-        @connection.execute("SET SESSION lock_wait_timeout=#{global_lock_wait_timeout['Value'].to_i + LOCK_WAIT_TIMEOUT_DELTA}")
+        desired_lock_wait_timeout = global_lock_wait_timeout['Value'].to_i + LOCK_WAIT_TIMEOUT_DELTA
+        if desired_lock_wait_timeout <= LOCK_WAIT_TIMEOUT_MAX
+          @connection.execute("SET SESSION lock_wait_timeout=#{desired_lock_wait_timeout}")
+        end
       end
     end
 
