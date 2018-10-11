@@ -10,6 +10,8 @@ describe Lhm do
 
   it 'set_session_lock_wait_timeouts should set the sessions lock wait timeouts to less than the global values by a delta' do
     connection = Lhm.send(:connection)
+    connection.execute('SET GLOBAL innodb_lock_wait_timeout=11')
+    connection.execute('SET GLOBAL lock_wait_timeout=11')
     connection.execute('SET SESSION innodb_lock_wait_timeout=1')
     connection.execute('SET SESSION lock_wait_timeout=1')
 
