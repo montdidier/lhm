@@ -41,6 +41,10 @@ module Lhm
             /Lock wait timeout exceeded/,
             /Deadlock found when trying to get lock/,
           ],
+          Mysql2::Error::TimeoutError => [
+            /Lock wait timeout exceeded/,
+            /Deadlock found when trying to get lock/,
+          ],
           Exception => [
             /Lock wait timeout exceeded/,
             /Deadlock found when trying to get lock/,
