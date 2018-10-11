@@ -1,3 +1,8 @@
+# 3.2.1 (Oct 11, 2018)
+
+* Retry on `MySQL::Error::Timeout` (https://github.com/Shopify/lhm/pull/57)
+* Retry 20 times by default (https://github.com/Shopify/lhm/pull/58)
+
 # 3.2.0 (Sep 4, 2018)
 
 * Fix Slave lag throttler database config (https://github.com/Shopify/lhm/pull/55)
