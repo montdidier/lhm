@@ -1,3 +1,7 @@
+# 3.2.2 (Oct 11, 2018)
+
+* Try to take a higher lock_wait_timeout value than others  (https://github.com/Shopify/lhm/pull/60)
+
 # 3.2.1 (Oct 11, 2018)
 
 * Retry on `MySQL::Error::Timeout` (https://github.com/Shopify/lhm/pull/57)
