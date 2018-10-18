@@ -1,3 +1,7 @@
+# 3.2.3 (Oct 16, 2018)
+
+* Add ActiveRecord::QueryTimedout exception class to be retried on "Timeout waiting for a response from the last query" message.
+
 # 3.2.2 (Oct 11, 2018)
 
 * Try to take a higher lock_wait_timeout value than others  (https://github.com/Shopify/lhm/pull/60)
