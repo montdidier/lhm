@@ -1,3 +1,7 @@
+# 3.2.4 (Oct 16, 2018)
+
+* Retry `Cleanup::Current` just like we retry all the other DDLs.
+
 # 3.2.3 (Oct 16, 2018)
 
 * Add ActiveRecord::QueryTimedout exception class to be retried on "Timeout waiting for a response from the last query" message.
