@@ -1,13 +1,20 @@
 require 'lhm/timestamp'
+require 'lhm/sql_retry'
 
 module Lhm
   module Cleanup
     class Current
-      def initialize(run, origin_table_name, connection)
+      def initialize(run, origin_table_name, connection, options = {})
         @run = run
         @table_name = TableName.new(origin_table_name)
         @connection = connection
         @ddls = []
+        @retry_helper = SqlRetry.new(
+          @connection,
+          {
+            log_prefix: "Cleanup::Current"
+          }.merge!(options.fetch(:retriable, {}))
+        )
       end
 
       attr_reader :run, :connection, :ddls
@@ -52,7 +59,9 @@ module Lhm
 
       def execute_ddls
         ddls.each do |ddl|
-          connection.execute(ddl)
+          @retry_helper.with_retries do |retriable_connection|
+            retriable_connection.execute(ddl)
+          end
         end
       end
 
