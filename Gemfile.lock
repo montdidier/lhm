@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     lhm (3.2.4)
-      retriable
+      retriable (>= 3.0.0)
 
 GEM
   remote: https://rubygems.org/
