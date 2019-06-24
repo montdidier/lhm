@@ -1,3 +1,7 @@
+# 3.2.5 (Jun 24, 2019)
+
+* Tighten dependency on retriable gem and remove workarounds for old version
+
 # 3.2.4 (Oct 16, 2018)
 
 * Retry `Cleanup::Current` just like we retry all the other DDLs.
