@@ -296,7 +296,7 @@ describe Lhm do
         end
       end
 
-      assert_match "Required triggers do not exist", exception.message
+      assert_match "Verification failed, aborting early", exception.message
     end
 
     it 'should not perform the table rename if the triggers do not exist after copying all rows' do

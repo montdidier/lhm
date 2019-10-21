@@ -161,5 +161,25 @@ describe Lhm::Chunker do
 
       printer.verify
     end
+
+    it 'should abort early if the triggers are removed' do
+      15.times { |n| execute("insert into origin set id = '#{ (n * n) + 1 }'") }
+
+      printer = mock()
+
+      failer = Proc.new { false }
+
+      exception = assert_raises do
+        Lhm::Chunker.new(
+          @migration, connection, { :verifier => failer, :printer => printer, :throttler => Lhm::Throttler::Time.new(:stride => 100) }
+        ).run
+      end
+
+      assert_match "Verification failed, aborting early", exception.message
+
+      slave do
+        count_all(@destination.name).must_equal(0)
+      end
+    end
   end
 end
