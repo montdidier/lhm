@@ -1,3 +1,7 @@
+# 3.3.0 (Oct 21, 2019)
+
+* Add a :verifier key to the options hash, with a default implementation which aborts the LHM if the triggers are removed.
+
 # 3.2.5 (Jun 24, 2019)
 
 * Tighten dependency on retriable gem and remove workarounds for old version
