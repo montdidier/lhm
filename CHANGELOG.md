@@ -1,3 +1,8 @@
+# 3.3.1 (Oct 30th, 2019)
+
+* Add test for tables with composite primary keys.
+* Add test for migrating to a composite primary key.
+
 # 3.3.0 (Oct 21, 2019)
 
 * Add a :verifier key to the options hash, with a default implementation which aborts the LHM if the triggers are removed.
