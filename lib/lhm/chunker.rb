@@ -11,6 +11,89 @@ module Lhm
     include Command
     include SqlHelper
 
+    # Keeps track of the speed by performing linear regression on the data on
+    # the last X minutes.
+    class Speedometer
+      attr_reader :log
+
+      def self.linregress(x, y)
+        raise ArgumentError, "x and y not the same length" if x.length != y.length
+
+        n = x.length
+        xsum = 0
+        ysum = 0
+        xxsum = 0
+        yysum = 0
+        xysum = 0
+
+        n.times do |i|
+          xsum += x[i]
+          ysum += y[i]
+          xxsum += x[i] ** 2
+          yysum += y[i] ** 2
+          xysum += x[i] * y[i]
+        end
+
+        denom = (n * xxsum - xsum ** 2)
+        if denom == 0
+          return [0, 0, true]
+        end
+
+        slope = (n * xysum - xsum * ysum) / denom
+        intercept = ysum / n - slope * xsum / n
+
+        [slope, intercept, false]
+      end
+
+      def initialize(window, initial_value = 0)
+        # log is just a list of [time, f(time)]
+        @log = []
+
+        # window is the window duration in seconds. Data outside of this window
+        # will be discarded as more comes in.
+        @window = window
+
+        self << initial_value
+      end
+
+      def <<(ft)
+        now = Time.now
+        @log << [now, ft]
+
+        # Find the first data point that's in the window. This data point may
+        # be very close to the current time and therefore the majority of the
+        # timed window may not have any data points in it.
+        #
+        # If we discarded all data points before this data point, the window is
+        # thus more biased towards the present and hence may be an
+        # over-estimate of the current speed. Thus, we keep just one data point
+        # before of the window.
+        i = @log.find_index { |l| now - l[0] < @window }
+        i -= 1 if i > 0
+        @log = @log[i..-1]
+      end
+
+      def speed
+        return nil if @log.length < 2
+
+        x = []
+        y = []
+
+        # Normalize all time entry to 0 otherwise it'll be too large and cause
+        # wide inaccuracy.
+        first_time = @log[0][0]
+
+        @log.each do |entry|
+          x << entry[0] - first_time
+          y << entry[1]
+        end
+
+        slope, _, singular = self.class.linregress(x, y)
+        return nil if singular
+        slope
+      end
+    end
+
     attr_reader :connection
 
     # Copy from origin to destination in chunks of size `stride`.
@@ -33,22 +116,27 @@ module Lhm
           log_prefix: "Chunker"
         }.merge!(options.fetch(:retriable, {}))
       )
+      @speedometer_window = options[:speedometer_window] || 5 * 60
     end
 
     def execute
       return if @chunk_finder.table_empty?
-      @next_to_insert = @start
-      while @next_to_insert <= @limit || (@start == @limit)
+      speedometer = Speedometer.new(@speedometer_window)
+
+      next_to_insert = @start
+      while next_to_insert <= @limit || (@start == @limit)
         stride = @throttler.stride
         top = upper_id(@next_to_insert, stride)
         verify_can_run
 
-        affected_rows = ChunkInsert.new(@migration, @connection, bottom, top, @options).insert_and_return_count_of_rows_created
+        affected_rows = ChunkInsert.new(@migration, @connection, next_to_insert, top, @options).insert_and_return_count_of_rows_created
+        @printer.notify(next_to_insert, @limit)
+
         if @throttler && affected_rows > 0
           @throttler.run
         end
-        @printer.notify(bottom, @limit)
-        @next_to_insert = top + 1
+
+        next_to_insert = top + 1
         break if @start == @limit
       end
       @printer.end
@@ -56,9 +144,6 @@ module Lhm
 
     private
 
-    def bottom
-      @next_to_insert
-    end
 
     def verify_can_run
       return unless @verifier
