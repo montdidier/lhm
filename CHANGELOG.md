@@ -1,3 +1,10 @@
+# 3.3.1 (Nov 8, 2019)
+
+* Ensure that :retriable configuration is correctly passed to all SqlRetry
+  instances.
+* Retry `Chunker#upper_id` and `options[:verifier]` on MySQL failure.
+* Catch more MySQL errors by default with SqlRetry.
+
 # 3.3.0 (Oct 21, 2019)
 
 * Add a :verifier key to the options hash, with a default implementation which aborts the LHM if the triggers are removed.
