@@ -39,6 +39,9 @@ module Lhm
             /Lock wait timeout exceeded/,
             /Timeout waiting for a response from the last query/,
             /Deadlock found when trying to get lock/,
+            /Query execution was interrupted/,
+            /Lost connection to MySQL server during query/,
+            /Max connect timeout reached/,
           ]
         },
         multiplier: 1, # each successive interval grows by this factor

@@ -19,6 +19,7 @@ module Lhm
       @migration = migration
       @connection = connection
       @chunk_finder = ChunkFinder.new(migration, connection, options)
+      @options = options
       @verifier = options[:verifier]
       if @throttler = options[:throttler]
         @throttler.connection = @connection if @throttler.respond_to?(:connection=)
@@ -37,7 +38,7 @@ module Lhm
         if @verifier && !@verifier.call
           raise "Verification failed, aborting early"
         end
-        affected_rows = ChunkInsert.new(@migration, @connection, bottom, top).insert_and_return_count_of_rows_created
+        affected_rows = ChunkInsert.new(@migration, @connection, bottom, top, @options).insert_and_return_count_of_rows_created
         if @throttler && affected_rows > 0
           @throttler.run
         end
