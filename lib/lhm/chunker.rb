@@ -27,6 +27,12 @@ module Lhm
       @start = @chunk_finder.start
       @limit = @chunk_finder.limit
       @printer = options[:printer] || Printer::Percentage.new
+      @retry_helper = SqlRetry.new(
+        @connection,
+        {
+          log_prefix: "Chunker"
+        }.merge!(options.fetch(:retriable, {}))
+      )
     end
 
     def execute
@@ -56,7 +62,11 @@ module Lhm
     end
 
     def upper_id(next_id, stride)
-      top = connection.select_value("select id from `#{ @migration.origin_name }` where id >= #{ next_id } order by id limit 1 offset #{ stride - 1}")
+      sql = "select id from `#{ @migration.origin_name }` where id >= #{ next_id } order by id limit 1 offset #{ stride - 1}"
+      top = @retry_helper.with_retries do |retriable_connection|
+        retriable_connection.select_value(sql)
+      end
+
       [top ? top.to_i : @limit, @limit].min
     end
 
