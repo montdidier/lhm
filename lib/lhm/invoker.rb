@@ -52,9 +52,9 @@ module Lhm
       entangler = Entangler.new(migration, @connection, options)
 
       entangler.run do
-        options[:verifier] ||= Proc.new { triggers_still_exist?(entangler) }
+        options[:verifier] ||= Proc.new { |conn| triggers_still_exist?(conn, entangler) }
         Chunker.new(migration, @connection, options).run
-        raise "Required triggers do not exist" unless triggers_still_exist?(entangler)
+        raise "Required triggers do not exist" unless triggers_still_exist?(@connection, entangler)
         if options[:atomic_switch]
           AtomicSwitcher.new(migration, @connection, options).run
         else
@@ -63,8 +63,8 @@ module Lhm
       end
     end
 
-    def triggers_still_exist?(entangler)
-      triggers = connection.select_values("SHOW TRIGGERS LIKE '%#{migrator.origin.name}'").select { |name| name =~ /^lhmt/ }
+    def triggers_still_exist?(conn, entangler)
+      triggers = conn.select_values("SHOW TRIGGERS LIKE '%#{migrator.origin.name}'").select { |name| name =~ /^lhmt/ }
       triggers.sort == entangler.expected_triggers.sort
     end
 

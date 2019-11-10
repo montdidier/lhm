@@ -41,9 +41,8 @@ module Lhm
       while @next_to_insert <= @limit || (@start == @limit)
         stride = @throttler.stride
         top = upper_id(@next_to_insert, stride)
-        if @verifier && !@verifier.call
-          raise "Verification failed, aborting early"
-        end
+        verify_can_run
+
         affected_rows = ChunkInsert.new(@migration, @connection, bottom, top, @options).insert_and_return_count_of_rows_created
         if @throttler && affected_rows > 0
           @throttler.run
@@ -59,6 +58,13 @@ module Lhm
 
     def bottom
       @next_to_insert
+    end
+
+    def verify_can_run
+      return unless @verifier
+      @retry_helper.with_retries do |retriable_connection|
+        raise "Verification failed, aborting early" if !@verifier.call(retriable_connection)
+      end
     end
 
     def upper_id(next_id, stride)
