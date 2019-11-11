@@ -16,18 +16,18 @@ describe Lhm::Invoker do
   end
 
   after(:each) do
-    @entangler.after if @invoker.triggers_still_exist?(@entangler)
+    @entangler.after if @invoker.triggers_still_exist?(@invoker.connection, @entangler)
   end
 
   describe 'triggers_still_exist?' do
     it 'should return true when triggers still exist' do
-      assert @invoker.triggers_still_exist?(@entangler)
+      assert @invoker.triggers_still_exist?(@invoker.connection, @entangler)
     end
 
     it 'should return false when triggers do not exist' do
       @entangler.after
 
-      refute @invoker.triggers_still_exist?(@entangler)
+      refute @invoker.triggers_still_exist?(@invoker.connection, @entangler)
     end
   end
 end
