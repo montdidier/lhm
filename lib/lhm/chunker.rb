@@ -124,13 +124,26 @@ module Lhm
       speedometer = Speedometer.new(@speedometer_window)
 
       next_to_insert = @start
+      bytes_copied = 0
       while next_to_insert <= @limit || (@start == @limit)
         stride = @throttler.stride
-        top = upper_id(@next_to_insert, stride)
+        top = upper_id(next_to_insert, stride)
         verify_can_run
 
         affected_rows = ChunkInsert.new(@migration, @connection, next_to_insert, top, @options).insert_and_return_count_of_rows_created
-        @printer.notify(next_to_insert, @limit)
+
+        p = progress
+
+        additional_info = {
+          total_bytes: p[0],
+          bytes_copied: p[1],
+        }
+
+        bytes_copied += additional_info[:bytes_copied]
+        speedometer << bytes_copied
+        additional_info[:copy_speed] = speedometer.speed
+
+        @printer.notify(next_to_insert, @limit, additional_info)
 
         if @throttler && affected_rows > 0
           @throttler.run
@@ -144,11 +157,25 @@ module Lhm
 
     private
 
-
     def verify_can_run
       return unless @verifier
       @retry_helper.with_retries do |retriable_connection|
         raise "Verification failed, aborting early" if !@verifier.call(retriable_connection)
+      end
+    end
+
+    def progress
+      query = %W{
+        SELECT
+          (origin_table.data_length + origin_table.index_length) AS origin_size,
+          (destination_table.data_length + destination_table.index_length) as destination_size
+        FROM information_schema.tables AS destination_table
+        JOIN information_schema.tables AS origin_table
+          ON origin_table.table_name = '#{@migration.origin_name}'
+        WHERE destination_table.table_name = '#{@migration.destination_name}'
+      }
+      @retry_helper.with_retries do |retriable_connection|
+        retriable_connection.select_rows(query.join(' ')).first
       end
     end
 
