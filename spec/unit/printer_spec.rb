@@ -60,6 +60,19 @@ describe Lhm::Printer do
 
       mock.verify
     end
+
+    it 'prints the exception message' do
+      mock = MiniTest::Mock.new
+      mock.expect(:write, :return_value, ["\rfailed: woops"])
+      mock.expect(:write, :return_value, ["\n"])
+
+      e = StandardError.new('woops')
+
+      @printer.instance_variable_set(:@output, mock)
+      @printer.exception(e)
+
+      mock.verify
+    end
   end
 
   describe 'dot printer' do

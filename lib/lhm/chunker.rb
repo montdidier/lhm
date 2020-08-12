@@ -52,6 +52,9 @@ module Lhm
         break if @start == @limit
       end
       @printer.end
+    rescue => e
+      @printer.exception(e) if @printer.respond_to?(:exception)
+      raise
     end
 
     private
