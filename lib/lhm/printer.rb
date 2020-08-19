@@ -29,6 +29,11 @@ module Lhm
         @output.write "\n"
       end
 
+      def exception(e)
+        write("failed: #{e}")
+        @output.write "\n"
+      end
+
       private
 
       def write(message)
