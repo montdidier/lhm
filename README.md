@@ -136,6 +136,24 @@ Or to set that as default throttler, use the following (for instance in a Rails 
 Lhm.setup_throttler(:slave_lag_throttler)
 ```
 
+### ThreadsRunning Throttler
+
+If you don't have access to connect directly to your replicas, you can also
+throttle based on the number of threads running in MySQL, as a proxy for "is
+this operation causing excessive load":
+
+```ruby
+Lhm.change_table :users, throttler: :threads_running_throttler do |m|
+  ...
+end
+```
+
+Or to set that as default throttler, use the following (for instance in a Rails initializer):
+
+```ruby
+Lhm.setup_throttler(:threads_running_throttler)
+```
+
 ## Table rename strategies
 
 There are two different table rename strategies available: `LockedSwitcher` and
