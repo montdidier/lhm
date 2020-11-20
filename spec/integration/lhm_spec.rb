@@ -40,6 +40,22 @@ describe Lhm do
         })
       end
     end
+
+    it 'should migrate the table when using a composite primary key if id column exists' do
+      table_create(:composite_primary_key)
+
+      Lhm.change_table(:composite_primary_key, :atomic_switch => false) do |t|
+        t.add_column(:logins, "int(12) default '0'")
+      end
+
+      slave do
+        table_read(:composite_primary_key).columns['logins'].must_equal({
+          :type           => 'int(12)',
+          :is_nullable    => 'YES',
+          :column_default => '0',
+        })
+      end
+    end
   end
 
   describe 'changes' do
@@ -47,6 +63,23 @@ describe Lhm do
       table_create(:users)
       table_create(:tracks)
       table_create(:permissions)
+    end
+
+    describe 'when changing to a composite primary key' do
+      it 'should be able to use ddl statement to create composite keys' do
+
+        Lhm.change_table(:users, :atomic_switch => false) do |t|
+          t.ddl("ALTER TABLE #{t.name} CHANGE id id bigint (20) NOT NULL")
+          t.ddl("ALTER TABLE #{t.name} DROP PRIMARY KEY, ADD PRIMARY KEY (username, id)")
+          t.ddl("ALTER TABLE #{t.name} ADD INDEX (id)")
+          t.ddl("ALTER TABLE #{t.name} CHANGE id id bigint (20) NOT NULL AUTO_INCREMENT")
+        end
+
+        slave do
+          connection.primary_key('users').must_equal(['username', 'id'])
+        end
+      end
+
     end
 
     describe 'when providing a subset of data to copy' do

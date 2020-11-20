@@ -1,3 +1,8 @@
+# UNRELEASED
+
+* Add test for tables with composite primary keys.
+* Add test for migrating to a composite primary key.
+
 # 3.3.1 (Nov 8, 2019)
 
 * Ensure that :retriable configuration is correctly passed to all SqlRetry
