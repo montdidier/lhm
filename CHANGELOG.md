@@ -1,7 +1,14 @@
-# UNRELEASED
+# 3.3.3 (Nov 20, 2020)
 
 * Add test for tables with composite primary keys.
 * Add test for migrating to a composite primary key.
+* Tests updated to work on MacOS Catalina
+* LHM will now print exceptions to @printer if @printer responds to :exception
+* New ThreadsRunning throttler uses MySQL Performance Schema to decide whether to throttle
+
+# 3.3.2 (not fully released)
+
+* Catch _even_ more MySQL errors by default with SqlRetry.
 
 # 3.3.1 (Nov 8, 2019)
 
