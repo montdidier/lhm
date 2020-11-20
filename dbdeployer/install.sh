@@ -12,8 +12,8 @@ fi
 echo "Checking if dbdeployer is installed"
 if ! [ -x "$(command -v ./bin/dbdeployer)" ]; then
   echo "Not installed...starting install"
-  VERSION=1.8.0
-  origin=https://github.com/datacharmer/dbdeployer/releases/download/$VERSION
+  VERSION=1.56.0
+  origin=https://github.com/datacharmer/dbdeployer/releases/download/v$VERSION
   filename=dbdeployer-$VERSION.$OS
   wget -q $origin/$filename.tar.gz
   tar -xzf $filename.tar.gz
