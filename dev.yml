@@ -1,14 +1,15 @@
 name: lhm
 up:
   - homebrew:
-      - openssl
-      - shopify/shopify/mysql-client
+      - mysql-client@5.7:
+          or: [mysql@5.7]
+          conflicts: [shopify/shopify/mysql-client, mysql-connector-c, mysql, mysql-client]
       - wget
-  - ruby: 2.5.0
+  - ruby: 2.6.5
   - bundler
   - custom:
       name: Database
-      met?: test -f spec/integration/database.yml && test "$(./dbdeployer/sandboxes/rsandbox_5_7_22/status_all | grep on  | wc -l | xargs echo)" = "2"
+      met?: test -f spec/integration/database.yml && test "$(./dbdeployer/sandboxes/rsandbox_5_7_22/status_all | grep on\  | wc -l | xargs echo)" = "2"
       meet: ./dbdeployer/install.sh
       down: ./dbdeployer/sandboxes/rsandbox_5_7_22/stop_all
 

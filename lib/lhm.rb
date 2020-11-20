@@ -75,8 +75,8 @@ module Lhm
     drop_tables_and_triggers(run, lhm_triggers, lhm_tables)
   end
 
-  def cleanup_current_run(run, table_name)
-    Lhm::Cleanup::Current.new(run, table_name, connection).execute
+  def cleanup_current_run(run, table_name, options = {})
+    Lhm::Cleanup::Current.new(run, table_name, connection, options).execute
   end
 
   def setup(connection)

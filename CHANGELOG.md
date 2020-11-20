@@ -1,7 +1,14 @@
-# 3.3.1 (Oct 30th, 2019)
+# UNRELEASED
 
 * Add test for tables with composite primary keys.
 * Add test for migrating to a composite primary key.
+
+# 3.3.1 (Nov 8, 2019)
+
+* Ensure that :retriable configuration is correctly passed to all SqlRetry
+  instances.
+* Retry `Chunker#upper_id` and `options[:verifier]` on MySQL failure.
+* Catch more MySQL errors by default with SqlRetry.
 
 # 3.3.0 (Oct 21, 2019)
 
