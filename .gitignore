@@ -7,7 +7,6 @@ pkg/*
 .ruby-gemset
 bin/rake
 spec/integration/database.yml
-Gemfile
 gemfiles/vendor
 omg.ponies
 *~
@@ -15,3 +14,4 @@ coverage
 bin/dbdeployer
 /dbdeployer/sandboxes
 /dbdeployer/binaries
+Gemfile.lock
