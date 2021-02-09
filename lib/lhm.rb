@@ -8,6 +8,8 @@ require 'lhm/throttler'
 require 'lhm/version'
 require 'lhm/cleanup/current'
 require 'lhm/sql_retry'
+require 'lhm/test_support'
+require 'lhm/railtie' if defined?(Rails::Railtie)
 require 'logger'
 
 # Large hadron migrator - online schema change tool
