@@ -1,3 +1,7 @@
+# 3.3.4 (Feb 9, 2020)
+
+* Run migrations inline in local/CI environment
+
 # 3.3.3 (Nov 20, 2020)
 
 * Add test for tables with composite primary keys.
