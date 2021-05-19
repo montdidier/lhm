@@ -316,6 +316,54 @@ describe Lhm do
       end
     end
 
+    it 'should rename a column with nullable' do
+      table_create(:users)
+      execute("INSERT INTO users (username) VALUES ('a user')")
+
+      Lhm.change_table(:users, :atomic_switch => false) do |t|
+        t.rename_column(:username, :user_name)
+      end
+
+      slave do
+        table_data = table_read(:users)
+        assert_nil table_data.columns['username']
+        table_read(:users).columns['user_name'].must_equal({
+          :type => 'varchar(255)',
+          :is_nullable => 'YES',
+          :column_default => nil,
+        })
+
+        result = select_one('SELECT `user_name` from users')
+        result = result['user_name'] if result.respond_to?(:has_key?)
+        result.must_equal('a user')
+      end
+    end
+
+    it 'should rename a column with a not null' do
+      table_create(:users)
+
+      execute("ALTER TABLE users MODIFY username varchar(255) NOT NULL")
+      execute("INSERT INTO users (username) VALUES ('a user')")
+
+      Lhm.change_table(:users, :atomic_switch => false) do |t|
+        t.rename_column(:username, :user_name)
+      end
+
+      slave do
+        table_data = table_read(:users)
+        assert_nil table_data.columns['username']
+        table_read(:users).columns['user_name'].must_equal({
+          :type => 'varchar(255)',
+          :is_nullable => 'NO',
+          :column_default => nil,
+        })
+
+        result = select_one('SELECT `user_name` from users')
+        result = result['user_name'] if result.respond_to?(:has_key?)
+        result.must_equal('a user')
+      end
+    end
+
     it 'should raise an exception if the triggers do not exist after copying all rows' do
       table_create(:users)
 
