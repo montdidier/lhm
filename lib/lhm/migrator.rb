@@ -84,7 +84,8 @@ module Lhm
       col = @origin.columns[old.to_s]
 
       definition = col[:type]
-      definition += ' NOT NULL' unless col[:is_nullable]
+
+      definition += ' NOT NULL' unless col[:is_nullable] == "YES"
       definition += " DEFAULT #{@connection.quote(col[:column_default])}" if col[:column_default]
 
       ddl('alter table `%s` change column `%s` `%s` %s' % [@name, old, nu, definition])
