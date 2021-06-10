@@ -43,6 +43,8 @@ module Lhm
             /Lost connection to MySQL server during query/,
             /Max connect timeout reached/,
             /Unknown MySQL server host/,
+            /connection is locked to hostgroup/,
+            /The MySQL server is running with the --read-only option so it cannot execute this statement/,
           ]
         },
         multiplier: 1, # each successive interval grows by this factor
